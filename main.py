@@ -1,1 +1,2 @@
-print("Library Management System Started")
+def register(name):
+    print(f"{name} has been registered.")
