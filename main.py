@@ -3,14 +3,14 @@ def register(name):
 
 #Login Feature code
 def login(user, password):
-    # simple hardcoded credentials
-    correct_user = "admin"
-    correct_password = "1234"
+    correct_user = "admin1"
+    correct_password = "12345"
 
     if user == correct_user and password == correct_password:
         print("Login successful")
     else:
-        print("Login failed")
+        print("Invalid username or password")
+
 
 register("admin")
 login("admin", "1234")
