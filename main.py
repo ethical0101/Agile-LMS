@@ -3,7 +3,7 @@ def register(name):
 
 #Login Feature code
 def login(user, password):
-    correct_user = "admin"
+    correct_user = "admin1"
     correct_password = "12345"
 
     if user == correct_user and password == correct_password:
