@@ -7,6 +7,7 @@ def login(user, password):
     correct_user = "admin"
     correct_password = "12345678"
 
+
     if user == correct_user and password == correct_password:
         print("Login successful")
     else:
