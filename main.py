@@ -5,7 +5,7 @@ def register(name):
 def login(user, password):
     # simple hardcoded credentials
     correct_user = "admin"
-    correct_password = "1234"
+    correct_password = "12345678"
 
     if user == correct_user and password == correct_password:
         print("Login successful")
