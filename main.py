@@ -1,16 +1,17 @@
 def register(name):
-    print(f"Student {name} registered successfully.")
+    print(f"{name} has been registered.")
 
 #Login Feature code
 def login(user, password):
-    correct_user = "admin1"
-    correct_password = "12345"
+    # simple hardcoded credentials
+    correct_user = "admin"
+    correct_password = "12345678"
+
 
     if user == correct_user and password == correct_password:
         print("Login successful")
     else:
-        print("Invalid username or password")
-
+        print("Login failed")
 
 register("admin")
 login("admin", "1234")
