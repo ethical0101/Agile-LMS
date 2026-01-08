@@ -1,5 +1,5 @@
 def register(name):
-    print(f"{name} has been registered.")
+    print(f"Student {name} registered successfully.")
 
 #Login Feature code
 def login(user, password):
