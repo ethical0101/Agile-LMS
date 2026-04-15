@@ -1,0 +1,716 @@
+BFS
+1. from collections import deque
+import ast
+def bfs(tree, start, goal):
+    queue = deque([[start]])
+    visited = set()
+    traversal = []
+    while queue:
+        path = queue.popleft()
+        node = path[-1]
+        if node not in visited:
+            visited.add(node)
+            traversal.append(node)
+            if node == goal:
+                return traversal, path
+            if node in tree:
+                for child in tree[node]:
+                    if child not in visited:
+                        queue.append(path + [child])
+    return traversal, None
+    
+# User Input
+tree_input = input("Enter the tree as a Python dictionary: ")
+tree = ast.literal_eval(tree_input)
+start = input("Enter start node: ")
+goal = input("Enter goal node: ")
+traversal, path = bfs(tree, start, goal)
+print("Traversal order:", " -> ".join(traversal))
+if path:
+    print("Path from", start, "to", goal, ":", " -> ".join(path))
+else:
+    print("No path found")
+Enter the graph as a Python dictionary: {'S': ['A', 'B'], 'A': ['C', 'D'], 'B': ['E'], 'C': [], 'D': ['G'], 'E': ['F'], 'F': [], 'G': []}
+Enter start node: S
+Enter goal node: G
+
+DFS
+2. def dfs(graph, start, goal):
+    visited = set()
+    traversal = []
+    def dfs_util(node, path):
+        visited.add(node)
+        traversal.append(node)
+        if node == goal:
+            return path
+        for neighbour in graph.get(node, []):
+            if neighbour not in visited:
+                result = dfs_util(neighbour, path + [neighbour])
+                if result is not None:
+                    return result
+        return None
+    path = dfs_util(start, [start])
+    return traversal, path
+# Input section
+graph_input = input("Enter the graph as a Python dictionary: ")
+graph = eval(graph_input)
+start = input("Enter start node: ")
+goal = input("Enter goal node: ")
+traversal, path = dfs(graph, start, goal)
+print("DFS Traversal Order:", " -> ".join(traversal))
+if path:
+    print("Path to goal:", " -> ".join(path))
+else:
+    print("Goal not reachable")
+
+
+
+
+DLS
+3. def dls(tree, node, goal, depth, path):
+    if depth < 0:
+        return None
+    path.append(node)
+    if node == goal:
+        return path
+    if depth == 0:
+        path.pop()
+        return None
+    for child in tree.get(node, []):
+        result = dls(tree, child, goal, depth-1, path)
+        if result:
+            return result
+    path.pop()
+    return None
+def ids(tree, start, goal, max_depth):
+    for depth in range(max_depth + 1):
+        result = dls(tree, start, goal, depth, [])
+        if result:
+            return result
+    return None
+    
+# Input
+tree = eval(input("Enter tree dictionary: "))
+start = input("Enter start node: ")
+goal = input("Enter goal node: ")
+path = ids(tree, start, goal, 10)
+if path:
+    print("Path:", " -> ".join(path))
+else:
+    print("Goal not found")
+Enter tree dictionary: {'A':['B','C'], 'B':['D','E'], 'C':['F','G']}
+Enter start node: A
+Enter goal node: G
+
+UCS
+4. import ast
+import heapq
+def ucs(graph, start, goal):
+    queue = [(0, [start])]
+    visited = set()
+    while queue:
+        cost, path = heapq.heappop(queue)
+        node = path[-1]
+        if node == goal:
+            return path, cost
+        if node not in visited:
+            visited.add(node)
+            print(f"Expanding node {node} with path cost {cost}")
+            if node in graph:
+                for neighbor, edge_cost in graph[node].items():
+                    if neighbor not in visited:
+                        heapq.heappush(queue, (cost + edge_cost, path + [neighbor]))
+    return None, None
+# Input section
+graph_input = input("Enter the graph as a dictionary (format: {'A':{'B':1,'C':2}, ...}): ")
+graph = ast.literal_eval(graph_input)
+start = input("Enter start node: ")
+goal = input("Enter goal node: ")
+path, cost = ucs(graph, start, goal)
+if path:
+    print(f"Least_cost path from {start} to {goal}: {' -> '.join(path)}")
+    print(f"Total cost: {cost}")
+else:
+    print("No path found")
+Enter the graph as a dictionary: {'S': {'A': 1, 'B': 4}, 'A': {'C': 2, 'D': 5}, 'B': {'E': 1}, 'C': {'F': 3}, 'D': {'G': 2}, 'E': {'G': 5}, 'F': {}, 'G': {}}
+Enter start node: S
+Enter goal node: G
+
+GREEDY BREIFY
+5. import ast
+import heapq
+def greedy_bfs(graph, start, goal, heuristic):
+    queue = [(heuristic[start], [start])]
+    visited = set()
+    while queue:
+        h_val, path = heapq.heappop(queue)
+        node = path[-1]
+        if node == goal:
+            return path
+        if node not in visited:
+            visited.add(node)
+            print(f"Expanding node {node} with heuristic {h_val}")
+            if node in graph:
+                for neighbor in graph[node]:
+                    if neighbor not in visited:
+                        heapq.heappush(queue, (heuristic[neighbor], path + [neighbor]))
+    return None
+# Input section
+graph_input = input("Enter the graph as a dictionary (format: {'A':['B','C'], ...}): ")
+graph = ast.literal_eval(graph_input)
+heuristic_input = input("Enter the heuristic as a dictionary (format: {'A':3,'B':1, ...}): ")
+heuristic = ast.literal_eval(heuristic_input)
+start = input("Enter start node: ")
+goal = input("Enter goal node: ")
+path = greedy_bfs(graph, start, goal, heuristic)
+if path:
+    print(f"Path from {start} to {goal} found by Greedy BFS: {' -> '.join(path)}")
+else:
+    print("No path found")
+Enter the graph as a dictionary: {'S': ['A', 'B'], 'A': ['C', 'D'], 'B': ['E'], 'C': [], 'D': ['G'], 'E': ['G'], 'G': []}
+Enter the heuristic as a dictionary: {'S': 6, 'A': 4, 'B': 3, 'C': 3, 'D': 2, 'E': 1, 'G': 0}
+Enter start node: S
+Enter goal node: G
+
+A*
+6. import ast
+import heapq
+def a_star(graph, start, goal, heuristic):
+    queue = [(heuristic[start], 0, [start])]   # (f, g, path)
+    visited = set()
+    while queue:
+        f_val, g_val, path = heapq.heappop(queue)
+        node = path[-1]
+        if node == goal:
+            return path, g_val
+        if node not in visited:
+            visited.add(node)
+            print(f"Expanding node {node} with g={g_val}, h={heuristic[node]}, f={f_val}")
+            for neighbor, edge_cost in graph.get(node, {}).items():
+                if neighbor not in visited:
+                    g_new = g_val + edge_cost
+                    f_new = g_new + heuristic[neighbor]
+                    heapq.heappush(queue, (f_new, g_new, path + [neighbor]))
+    return None, None
+# Input section
+graph_input = input("Enter the graph as a dictionary (format: {'A':{'B':1,'C':2}, ...}): ")
+graph = ast.literal_eval(graph_input)
+heuristic_input = input("Enter the heuristic as a dictionary (format: {'A':3,'B':1, ...}): ")
+heuristic = ast.literal_eval(heuristic_input)
+start = input("Enter start node: ")
+goal = input("Enter goal node: ")
+path, total_cost = a_star(graph, start, goal, heuristic)
+if path:
+    print(f"Path from {start} to {goal} found by A*: {' -> '.join(path)}")
+    print(f"Total cost: {total_cost}")
+else:
+    print("No path found")
+Enter the graph as a dictionary: {'S': {'A': 1, 'B': 4}, 'A': {'C': 2, 'D': 5}, 'B': {'E': 1}, 'C': {'F': 3}, 'D': {'G': 2}, 'E': {'G': 5}, 'F': {}, 'G': {}}
+Enter the heuristic as a dictionary: {'S': 6, 'A': 4, 'B': 3, 'C': 3, 'D': 2, 'E': 1, 'F': 4, 'G': 0}
+Enter start node: S
+Enter goal node: G
+
+MINIMAX
+7. import ast
+# Minimax Algorithm
+def minimax_collapsed(tree, maximizingPlayer, level=0):
+    # Base case: leaf node (score)
+    if not isinstance(tree, list):
+        return tree
+    # Recursively evaluate child nodes
+    child_values = [
+        minimax_collapsed(child, not maximizingPlayer, level + 1)
+        for child in tree
+    ]
+    # Collapse values based on player
+    if maximizingPlayer:
+        max_val = max(child_values)
+        print(f"Level {level} Max node: {child_values} -> {max_val}")
+        return max_val
+    else:
+        min_val = min(child_values)
+        print(f"Level {level} Min node: {child_values} -> {min_val}")
+        return min_val
+# Input Section
+tree_input = input("Enter the game tree as nested lists (leaf nodes are scores): ")
+tree = ast.literal_eval(tree_input)
+# Run Minimax
+print("\nMinimax Evaluation (collapsed values at each level):\n")
+optimal_value = minimax_collapsed(tree, True)
+print("\nOptimal value at root:", optimal_value)
+Enter the game tree as nested lists (leaf nodes are scores): [[3, 5], [2, 9], [12, 5]]
+
+ALPHA BETA
+8. import ast
+def alphabeta(node, maximizing, alpha, beta):
+    if isinstance(node, int):
+        return node
+
+    if maximizing:
+        value = float('-inf')
+        for child in node:
+            value = max(value, alphabeta(child, False, alpha, beta))
+            alpha = max(alpha, value)
+            if beta <= alpha:
+                break
+        return value
+    else:
+        value = float('inf')
+        for child in node:
+            value = min(value, alphabeta(child, True, alpha, beta))
+            beta = min(beta, value)
+            if beta <= alpha:
+                break
+        return value
+# Input
+tree = ast.literal_eval(input("Enter the game tree as nested list: "))
+result = alphabeta(tree, True, float('-inf'), float('inf'))
+print("Optimal value at root:", result)
+[[3,5],[2,9],[12,5]]
+
+
+
+
+
+
+
+
+
+
+HILL CLIMB
+9. def hill_climbing(graph, heights, start):
+    current = start
+    path = [current]
+    while True:
+        neighbors = graph.get(current, [])
+        # If no neighbors, stop
+        if not neighbors:
+            break
+        # Assume first neighbor is best initially
+        best_neighbor = neighbors[0]
+        # Find neighbor with maximum height
+        for n in neighbors:
+            if heights[n] > heights[best_neighbor]:
+                best_neighbor = n
+        # Move to better neighbor if exists
+        if heights[best_neighbor] > heights[current]:
+            current = best_neighbor
+            path.append(current)
+        else:
+            # Local maximum reached
+            break
+    return current, path
+graph = {
+    'A': ['B', 'C'],
+    'B': ['D', 'E'],
+    'C': ['F', 'G'],
+    'D': [],
+    'E': [],
+    'F': [],
+    'G': []
+}
+heights = {
+    'A': 10, 'B': 14, 'C': 12,
+    'D': 13, 'E': 15, 'F': 11, 'G': 8
+}
+start_node = 'A'
+peak, path = hill_climbing(graph, heights, start_node)
+print(f"Hill Climbing path: {path}")
+print(f"Peak reached: {peak} with value {heights[peak]}")
+
+
+11. missionaries 
+from collections import deque
+def valid(m, c):
+    return (0 <= m <= 3 and 0 <= c <= 3 and
+            (m == 0 or m >= c) and
+            (3-m == 0 or 3-m >= 3-c))
+def bfs():
+    start = (3,3,0)
+    goal = (0,0,1)
+    queue = deque([[start]])
+    visited = set()
+    moves = [(1,0),(2,0),(0,1),(0,2),(1,1)]
+    while queue:
+        path = queue.popleft()
+        m,c,b = path[-1]
+
+        if (m,c,b) == goal:
+            return path
+        if (m,c,b) not in visited:
+            visited.add((m,c,b))
+            for dm,dc in moves:
+                if b==0:
+                    new = (m-dm, c-dc, 1)
+                else:
+                    new = (m+dm, c+dc, 0)
+                if valid(new[0], new[1]):
+                    queue.append(path+[new])
+print("BFS Solution:")
+print(bfs())
+dfs
+def valid(m,c):
+    return (0<=m<=3 and 0<=c<=3 and
+           (m==0 or m>=c) and
+           (3-m==0 or 3-m>=3-c))
+moves=[(1,0),(2,0),(0,1),(0,2),(1,1)]
+def dfs(state,path,visited):
+    if state==(0,0,1):
+        return path
+    m,c,b=state
+    visited.add(state)
+    for dm,dc in moves:
+        if b==0:
+            new=(m-dm,c-dc,1)
+        else:
+            new=(m+dm,c+dc,0)
+        if valid(new[0],new[1]) and new not in visited:
+            res=dfs(new,path+[new],visited)
+            if res:
+                return res
+start=(3,3,0)
+print("DFS Solution:")
+print(dfs(start,[start],set()))
+
+
+12.  waterjug
+import heapq
+def a_star(cap1, cap2, goal):
+    start = (0, 0)
+    pq = [(0, start, [])]
+    visited = set()
+    while pq:
+        cost, (x, y), path = heapq.heappop(pq)
+        if x == goal or y == goal:
+            return path + [(x, y)]
+        if (x, y) in visited:
+            continue
+        visited.add((x, y))
+        moves = [
+            (cap1, y), (x, cap2),   # fill jugs
+            (0, y), (x, 0),         # empty jugs
+            (x - min(x, cap2-y), y + min(x, cap2-y)),  # pour jug1->jug2
+            (x + min(y, cap1-x), y - min(y, cap1-x))   # pour jug2->jug1
+        ]
+        for nx, ny in moves:
+            if (nx, ny) not in visited:
+                h = abs(goal - nx) + abs(goal - ny)
+                heapq.heappush(pq, (cost + 1 + h, (nx, ny), path + [(x, y)]))
+# Example
+path = a_star(4, 3, 2)
+print("Solution path:")
+for p in path:
+    print(p)
+
+
+
+
+
+
+
+
+
+
+
+13.travelling salesman hill climb
+import random
+def path_cost(path, graph):
+    cost = 0
+    for i in range(len(path)-1):
+        cost += graph[path[i]][path[i+1]]
+    cost += graph[path[-1]][path[0]]
+    return cost
+def hill_climb(graph):
+    n = len(graph)
+    path = list(range(n))
+    random.shuffle(path)
+    best_cost = path_cost(path, graph)
+    while True:
+        new_path = path[:]
+        i, j = random.sample(range(n), 2)
+        new_path[i], new_path[j] = new_path[j], new_path[i]
+        new_cost = path_cost(new_path, graph)
+        if new_cost < best_cost:
+            path = new_path
+            best_cost = new_cost
+        else:
+            break
+    return path, best_cost
+graph = [
+    [0,10,15,20],
+    [10,0,35,25],
+    [15,35,0,30],
+    [20,25,30,0]
+]
+path, cost = hill_climb(graph)
+print("Tour:", path)
+print("Minimum Cost:", cost)
+
+
+14. tictactoe alphabetapruing
+def win(b):
+    w=[(0,1,2),(3,4,5),(6,7,8),(0,3,6),(1,4,7),(2,5,8),(0,4,8),(2,4,6)]
+    for i,j,k in w:
+        if b[i]==b[j]==b[k] and b[i]!=" ":
+            return b[i]
+def show(b):
+    print(b[0]+" | "+b[1]+" | "+b[2])
+    print("--+---+--")
+    print(b[3]+" | "+b[4]+" | "+b[5])
+    print("--+---+--")
+    print(b[6]+" | "+b[7]+" | "+b[8])
+b=[" "]*9
+p="X"
+while True:
+    show(b)
+    m=int(input(f"Player {p}, enter position (1-9): "))-1
+    if b[m]==" ":
+        b[m]=p
+    else:
+        print("Invalid move")
+        continue
+    if win(b):
+        show(b)
+        print("Player",p,"wins!")
+        break
+    if " " not in b:
+        show(b)
+        print("Draw")
+        break
+    p="O" if p=="X" else "X"	
+
+15. 8 queen backtracking
+def safe(board,row,col,n):
+    for i in range(col):
+        if board[row][i]==1:
+            return False
+    i=row; j=col
+    while i>=0 and j>=0:
+        if board[i][j]==1:
+            return False
+        i-=1; j-=1
+    i=row; j=col
+    while i<n and j>=0:
+        if board[i][j]==1:
+            return False
+        i+=1; j-=1
+    return True
+def solve(board,col,n):
+    global count
+    if col==n:
+        count+=1
+        print("\nSolution",count,":")
+        for r in board:
+            print("".join(map(str,r)))
+        return
+    for i in range(n):
+        if safe(board,i,col,n):
+            board[i][col]=1
+            solve(board,col+1,n)
+            board[i][col]=0
+n=int(input("Enter number of queens(N): "))
+board=[[0]*n for _ in range(n)]
+count=0
+solve(board,0,n)
+
+
+16. wumpus world using prepositional logic
+pits = [(3,1),(3,3),(4,4)]
+wumpus = (1,3)
+gold = (2,3)
+def adjacent(x,y):
+    return [(x+1,y),(x-1,y),(x,y+1),(x,y-1)]
+x = int(input("Enter agent X position: "))
+y = int(input("Enter agent Y position: "))
+print("\nAgent starting at:",(x,y))
+adj = adjacent(x,y)
+breeze = any(p in adj for p in pits)
+stench = wumpus in adj
+glitter = (x,y)==gold
+print("\nPercepts at",(x,y))
+if breeze:
+    print("Breeze detected -> Pit in adjacent cell")
+else:
+    print("No Breeze -> No Pit in adjacent cells")
+if stench:
+    print("Stench detected -> Wumpus in adjacent cell")
+else:
+    print("No Stench -> No Wumpus in adjacent cells")
+if glitter:
+    print("Glitter detected -> Gold here")
+else:
+    print("No Glitter -> Gold not here")
+print("\nPropositional Logic Inference:")
+
+for cell in adj:
+    if cell not in pits:
+        print("No Pit at",cell)
+    if cell != wumpus:
+        print("No Wumpus at",cell)
+print("\nSafe cells identified using propositional logic.")
+
+17. suv navie bayes
+import pandas as pd
+# -------- LOAD DATASET --------
+file = input("Enter excel file name: ")
+df = pd.read_excel(file)
+# -------- PRIOR PROBABILITIES --------
+total = len(df)
+p_yes = len(df[df["Car_Stolen"] == "Yes"]) / total
+p_no  = len(df[df["Car_Stolen"] == "No"]) / total
+# -------- FUNCTION TO CLASSIFY --------
+def classify(color, type, origin):
+    yes_rows = df[df["Car_Stolen"] == "Yes"]
+    no_rows  = df[df["Car_Stolen"] == "No"]
+    # Conditional probabilities
+    p_color_yes  = len(yes_rows[yes_rows["Color"] == color]) / len(yes_rows)
+    p_type_yes   = len(yes_rows[yes_rows["Type"] == type]) / len(yes_rows)
+    p_origin_yes = len(yes_rows[yes_rows["Origin"] == origin]) / len(yes_rows)
+    p_color_no  = len(no_rows[no_rows["Color"] == color]) / len(no_rows)
+    p_type_no   = len(no_rows[no_rows["Type"] == type]) / len(no_rows)
+    p_origin_no = len(no_rows[no_rows["Origin"] == origin]) / len(no_rows)
+    # Posterior probabilities
+    prob_yes = p_yes * p_color_yes * p_type_yes * p_origin_yes
+    prob_no  = p_no  * p_color_no  * p_type_no  * p_origin_no
+    print("\nProbability Yes:", prob_yes)
+    print("Probability No :", prob_no)
+
+    if prob_yes > prob_no:
+        print("Prediction: Yes")
+    else:
+        print("Prediction: No")
+# -------- TEST CASES --------
+print("\nX1 = (Red, SUV, Domestic)")
+classify("Red", "SUV", "Domestic")
+print("\nX2 = (Yellow, Sports, Domestic)")
+classify("Yellow", "Sports", "Domestic")
+18. simple facts pl
+facts=[
+    ("book","on","table"),
+    ("pen","in","box"),
+    ("cat","under","table"),
+    ("phone","on","table"),
+    ("keys","in","drawer"),
+    ("lamp","on","desk"),
+    ("apple","on","table"),
+    ("mouse","in","drawer"),
+    ("bag","under","chair"),
+    ("cup","on","table"),
+]
+def check_fact(subject,preposition,obj):
+    if(subject,preposition,obj) in facts:
+        return True
+    else:
+        return False
+def query(subject,preposition,obj):
+    if check_fact(subject,preposition,obj):
+        print(f"Yes, the {subject} is {preposition} the {obj}. -> True")
+    else:
+        print(f"No, the {subject} is not {preposition} the {obj}. -> False")
+query("book","on","table")
+query("cat","on","table")
+FOL
+On={
+    ("book","table"),
+    ("phone","table"),
+    ("lamp","desk"),
+    ("apple","table"),
+    ("cup","table"),
+}
+In={
+    ("pen","box"),
+    ("keys","drawer"),
+    ("mouse","drawer"),
+}
+Under={
+    ("cat","table"),
+    ("bag","chair"),
+}
+def check_fact(subject,relation,obj):
+    if relation=="On":
+        return (subject,obj) in On
+    elif relation=="In":
+        return (subject,obj) in In
+    elif relation=="Under":
+        return (subject,obj) in Under
+    else:
+        return False
+def query(subject,relation,obj):
+    if check_fact(subject,relation,obj):
+        print(f"Yes, the {subject} is {relation} the {obj}. -> True")
+    else:
+        print(f"No, the {subject} is not {relation} the {obj}. -> False")
+query("book","On","table")
+query("cat","On","table")
+
+
+19 . class BlockWorld:
+    def __init__(self, initial, goal):
+        self.state = initial
+        self.goal = goal
+        self.plan = []
+    def clear(self, block):
+        for b in self.state:
+            if self.state[b] == block:
+                return False
+        return True
+    def move(self, block, dest):
+        source = "Table" if self.state[block] is None else self.state[block]
+        destination = "Table" if dest is None else dest
+        self.state[block] = dest
+        self.plan.append(f"Move {block} from {source} to {destination}")
+    def solve(self):
+        for block in self.goal:
+            goal_pos = self.goal[block]
+            if self.state[block] != goal_pos:
+                if self.clear(block):
+                    self.move(block, goal_pos)
+        return self.plan
+initial_state = {
+    'A': None,
+    'B': None,
+    'C': None
+}
+goal_state = {
+    'A': 'B',
+    'B': 'C',
+    'C': None
+}
+bw = BlockWorld(initial_state, goal_state)
+print("Initial State: A on Table, B on Table, C on Table")
+print("Goal State: A on B, B on C")
+solution = bw.solve()
+for step in solution:
+    print(step)
+
+20. monkey banana
+# Monkey and Banana Problem using Planning
+class MonkeyBanana:
+    def __init__(self):
+        self.state = {"monkey": "door", "box": "window", "banana": False}
+        self.plan = []
+    def move(self, pos):
+        self.state["monkey"] = pos
+        self.plan.append(f"Monkey moves to {pos}")
+    def push(self, pos):
+        self.state["monkey"] = pos
+        self.state["box"] = pos
+        self.plan.append(f"Monkey pushes box to {pos}")
+    def climb(self):
+        self.plan.append("Monkey climbs on the box")
+    def grab(self):
+        self.state["banana"] = True
+        self.plan.append("Monkey grabs the banana")
+    def solve(self):
+        if self.state["monkey"] != "window":
+            self.move("window")
+        if self.state["box"] != "center":
+            self.push("center")
+        self.climb()
+        self.grab()
+        return self.plan
+mb = MonkeyBanana()
+solution = mb.solve()
+print("Steps to achieve goal:")
+for step in solution:
+    print(step)
