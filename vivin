@@ -1,0 +1,393 @@
+1. BFS (Breadth First Search)
+from collections import deque
+graph = {}
+edges = int(input("Enter number of edges: "))
+for _ in range(edges):
+    u, v = input("Enter edge (u v): ").split()
+    graph.setdefault(u, []).append(v)
+    graph.setdefault(v, []).append(u)
+start = input("Enter start node: ")
+queue = deque([start])
+visited = set([start])
+print("BFS Traversal:")
+while queue:
+    node = queue.popleft()
+    print(node, end=" ")
+    for neighbor in graph[node]:
+        if neighbor not in visited:
+            visited.add(neighbor)
+            queue.append(neighbor)
+
+
+2. DFS (Depth First Search)
+graph = {}
+edges = int(input("Enter number of edges: "))
+for _ in range(edges):
+    u, v = input("Enter edge: ").split()
+    graph.setdefault(u, []).append(v)
+    graph.setdefault(v, []).append(u)
+visited = set()
+def dfs(node):
+    visited.add(node)
+    print(node, end=" ")
+    for neighbor in graph[node]:
+        if neighbor not in visited:
+            dfs(neighbor)
+start = input("Enter start node: ")
+print("DFS Traversal:")
+dfs(start)
+
+
+3. Water Jug Problem
+
+from collections import deque
+cap1, cap2, target = map(int, input("Enter jug1 jug2 target: ").split())
+queue = deque([(0, 0)])
+visited = set()
+print("Steps:")
+while queue:
+    x, y = queue.popleft()
+    if (x, y) in visited:
+        continue
+    visited.add((x, y))
+    print(x, y)
+    if x == target or y == target:
+        print("Target reached")
+        break
+    queue.append((cap1, y))
+    queue.append((x, cap2))
+    queue.append((0, y))
+    queue.append((x, 0))
+    queue.append((max(0, x - (cap2 - y)), min(cap2, x + y)))
+    queue.append((min(cap1, x + y), max(0, y - (cap1 - x))))
+
+
+A* Algorithm
+import heapq
+graph = {}
+edges = int(input("Enter number of edges: "))
+for _ in range(edges):
+    u, v, w = input("Enter u v weight: ").split()
+    graph.setdefault(u, []).append((v, int(w)))
+heuristic = {}
+n = int(input("Enter number of heuristic values: "))
+for _ in range(n):
+    node, h = input("Enter node heuristic: ").split()
+    heuristic[node] = int(h)
+start, goal = input("Enter start and goal: ").split()
+pq = [(heuristic[start], 0, start)]
+visited = set()
+while pq:
+    f, cost, node = heapq.heappop(pq)
+    if node == goal:
+        print("Cost:", cost)
+        break
+    if node in visited:
+        continue
+    visited.add(node)
+    for neighbor, weight in graph.get(node, []):
+        new_cost = cost + weight
+        heapq.heappush(pq, (new_cost + heuristic[neighbor], new_cost, neighbor))
+
+
+
+
+5. IDS (Iterative Deepening Search)
+graph = {}
+edges = int(input("Enter number of edges: "))
+for _ in range(edges):
+    u, v = input("Enter edge: ").split()
+    graph.setdefault(u, []).append(v)
+start = input("Enter start: ")
+goal = input("Enter goal: ")
+def dls(node, depth):
+    if depth == 0 and node == goal:
+        return True
+    if depth > 0:
+        for neighbor in graph.get(node, []):
+            if dls(neighbor, depth - 1):
+                return True
+    return Fals
+depth = 0
+while True:
+    if dls(start, depth):
+        print("Found at depth", depth)
+        break
+    depth += 1
+
+6. Alpha-Beta Pruning
+def alphabeta(depth, node, maximizing, values, alpha, beta):
+    if depth == 0:
+        return values[node]
+    if maximizing:
+        best = -999
+        for i in range(2):
+            val = alphabeta(depth - 1, node * 2 + i, False, values, alpha, beta)
+            best = max(best, val)
+            alpha = max(alpha, best)
+            if beta <= alpha:
+                break
+        return best
+    else:
+        best = 999
+        for i in range(2):
+            val = alphabeta(depth - 1, node * 2 + i, True, values, alpha, beta)
+            best = min(best, val)
+            beta = min(beta, best)
+            if beta <= alpha:
+                break
+        return best
+values = list(map(int, input("Enter leaf nodes: ").split()))
+depth = int(input("Enter depth: "))
+print("Optimal value:", alphabeta(depth, 0, True, values, -999, 999))
+
+7. Hill Climbin
+values = list(map(int, input("Enter state values: ").split()))
+current = int(input("Enter initial position (index): "))
+n = len(values)
+print("Initial State:", current, "Value:", values[current])
+while True:
+    left = current - 1
+    right = current + 1
+    best = current
+    # check left neighbor
+    if left >= 0 and values[left] > values[best]:
+        best = left
+
+    # check right neighbor
+    if right < n and values[right] > values[best]:
+        best = right
+    # if no improvement, stop
+    if best == current:
+        break
+    # move to better neighbor
+    current = best
+    print("Moved to:", current, "Value:", values[current])
+print("\nFinal State:", current)
+print("Optimal Value:", values[current])
+
+
+baysein
+def compute_joint_probability():
+ print("Enter probabilities for Bayesian Network")
+ P_A = float(input("Enter P(A): "))
+ P_B_given_A = float(input("Enter P(B|A): "))
+ P_C_given_B = float(input("Enter P(C|B): "))
+ joint_probability = P_A * P_B_given_A * P_C_given_B
+ print("\nJoint Probability P(A, B, C) =", joint_probability)
+compute_joint_probability()
+
+block world puzzle
+from copy import deepcopy
+# Initial State and Goal State
+initial_state = [['A', 'B'], ['C'], []]
+goal_state = [['C', 'B', 'A'], [], []]
+# Function to print state
+def print_state(state):
+    for i, stack in enumerate(state):
+        print(f"Stack {i+1}: {stack}")
+    print("-" * 30)
+# Check if goal reached
+def is_goal(state):
+    return state == goal_state
+# Generate possible moves
+def get_moves(state):
+    moves = []
+    for i in range(len(state)):
+        if len(state[i]) == 0:
+            continue
+        for j in range(len(state)):
+            if i != j:
+                new_state = deepcopy(state)
+                block = new_state[i].pop()
+                new_state[j].append(block)
+                moves.append(new_state)
+    return moves
+# DFS Planning
+def dfs(state, visited, path):
+    if is_goal(state):
+        return path
+    visited.append(state)
+    for move in get_moves(state):
+        if move not in visited:
+            result = dfs(move, visited, path + [move])
+            if result:
+                return result
+    return None
+# Run the planner
+print("Initial State:")
+print_state(initial_state)
+solution = dfs(initial_state, [], [initial_state])
+if solution:
+    print("\nSolution Found:\n")
+    for step in solution:
+        print_state(step)
+else:
+    print("No solution found!")
+
+monkey banana
+# Monkey Banana Problem using simple planning (State Space Search)
+class State:
+    def __init__(self, monkey_pos, box_pos, monkey_on_box, has_banana):
+        self.monkey_pos = monkey_pos
+        self.box_pos = box_pos
+        self.monkey_on_box = monkey_on_box
+        self.has_banana = has_banana
+    def __eq__(self, other):
+        return (self.monkey_pos == other.monkey_pos and
+                self.box_pos == other.box_pos and
+                self.monkey_on_box == other.monkey_on_box and
+                self.has_banana == other.has_banana)
+    def __hash__(self):
+        return hash((self.monkey_pos, self.box_pos,
+                     self.monkey_on_box, self.has_banana))
+    def __str__(self):
+        return f"Monkey:{self.monkey_pos}, Box:{self.box_pos}, OnBox:{self.monkey_on_box}, Banana:{self.has_banana}"
+# Possible actions
+def get_next_states(state):
+    next_states = []
+    # Move monkey
+    for pos in ['A', 'B', 'C']:
+        if pos != state.monkey_pos and not state.monkey_on_box:
+            next_states.append(("Move to " + pos,
+                                State(pos, state.box_pos,
+                                      state.monkey_on_box,
+                                      state.has_banana)))
+    # Push box
+    if state.monkey_pos == state.box_pos and not state.monkey_on_box:
+        for pos in ['A', 'B', 'C']:
+            if pos != state.box_pos:
+                next_states.append(("Push box to " + pos,
+                                    State(pos, pos,
+                                          False,
+                                          state.has_banana)))
+    # Climb box
+    if state.monkey_pos == state.box_pos and not state.monkey_on_box:
+        next_states.append(("Climb box",
+                            State(state.monkey_pos, state.box_pos,
+                                  True, state.has_banana)))
+    # Grab banana
+    if state.monkey_on_box and state.monkey_pos == 'B':  # Banana at position B
+        next_states.append(("Grab banana",
+                            State(state.monkey_pos, state.box_pos,
+                                  state.monkey_on_box, True)))
+    return next_state
+# Goal check
+def is_goal(state):
+    return state.has_banana
+# DFS search
+def dfs(state, visited, path):
+    if is_goal(state):
+        return path
+    visited.add(state)
+    for action, next_state in get_next_states(state):
+        if next_state not in visited:
+            result = dfs(next_state, visited, path + [(action, next_state)])
+            if result:
+                return result
+    return None
+# Initial state
+initial_state = State(monkey_pos='A', box_pos='C',
+                      monkey_on_box=False, has_banana=False)
+# Run
+solution = dfs(initial_state, set(), [])
+print("Initial State:")
+print(initial_state)
+if solution:
+    print("\nSolution Steps:\n")
+    for step, (action, state) in enumerate(solution, 1):
+        print(f"Step {step}: {action}")
+        print(state)
+else:
+    print("No solution found!")
+
+8 queens
+N = 8
+# Function to print solution
+def print_board(board):
+    for row in board:
+        print(" ".join("Q" if col else "." for col in row))
+    print("\n")
+# Check if it's safe to place queen
+def is_safe(board, row, col):
+    # Check column
+    for i in range(row):
+        if board[i][col]:
+            return False
+    # Check left diagonal
+    i, j = row - 1, col - 1
+    while i >= 0 and j >= 0:
+        if board[i][j]:
+            return False
+        i -= 1
+        j -= 1
+    # Check right diagonal
+    i, j = row - 1, col + 1
+    while i >= 0 and j < N:
+        if board[i][j]:
+            return False
+        i -= 1
+        j += 1
+    return True
+# Backtracking function
+def solve(board, row):
+    if row == N:
+        print_board(board)
+        return True   # change to False if you want ALL solutions
+    for col in range(N):
+        if is_safe(board, row, col):
+            board[row][col] = 1
+            if solve(board, row + 1):
+                return True
+            board[row][col] = 0  # backtrack
+    return False
+# Driver code
+board = [[0 for _ in range(N)] for _ in range(N)]
+if not solve(board, 0):
+    print("No solution exists")
+
+Travelling Salesman Problem
+import random
+# Calculate total distance of a tour
+def calculate_distance(tour, dist_matrix):
+    total = 0
+    for i in range(len(tour)):
+        total += dist_matrix[tour[i]][tour[(i + 1) % len(tour)]]
+    return total
+# Generate neighbor by swapping two cities
+def get_neighbor(tour):
+    new_tour = tour[:]
+    i, j = random.sample(range(len(tour)), 2)
+    new_tour[i], new_tour[j] = new_tour[j], new_tour[i]
+    return new_tour
+# Hill Climbing Algorithm
+def hill_climbing(dist_matrix):
+    n = len(dist_matrix)
+    # Initial random tour
+    current_tour = list(range(n))
+    random.shuffle(current_tour)
+    current_distance = calculate_distance(current_tour, dist_matrix)
+    while True:
+        neighbor = get_neighbor(current_tour)
+        neighbor_distance = calculate_distance(neighbor, dist_matrix)
+        # Move to better neighbor
+        if neighbor_distance < current_distance:
+            current_tour = neighbor
+            current_distance = neighbor_distance
+        else:
+            break   # stop when no better neighbor
+
+    return current_tour, current_distance
+#  User Input
+n = int(input("Enter number of cities: "))
+print("Enter distance matrix:")
+dist_matrix = []
+for i in range(n):
+    row = list(map(int, input().split()))
+    dist_matrix.append(row)
+# Run algorithm
+tour, distance = hill_climbing(dist_matrix)
+# Output
+print("\nBest Tour Found:", tour)
+print("Minimum Distance:", distance)
+
